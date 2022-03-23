@@ -1,12 +1,11 @@
 import { StatusBar } from 'expo-status-bar';
 import { Platform } from 'react-native-web';
-//import { useDeviceOrientation } from '@react-native-community/hooks';
 import { StyleSheet, FlatList, SafeAreaView, View, TouchableHighlight, Text, Fil } from "react-native";
 import "react-native-get-random-values";
 import "react-native-url-polyfill/auto";
 import { S3Client, ListObjectsCommand, GetObjectCommand} from "@aws-sdk/client-s3";
 import {getSignedUrl, S3RequestPresigner} from "@aws-sdk/s3-request-presigner";
-import {ACCESS_ID, SECRET_KEY} from "@env";
+import {ACCESS_ID, SECRET_KEY, BUCKET, REGION} from "@env";
 import React, {useState, useEffect} from 'react';
 import {Video} from 'expo-av';
 import { HttpRequest } from '@aws-sdk/protocol-http';
@@ -15,7 +14,6 @@ import { formatUrl } from '@aws-sdk/util-format-url';
 import { Linking } from "react-native";
 
 export default function App() {
-  //import { Hash } from "@aws-sdk/hash-node";
   const [list, setList] = useState([]);
   const [status, setStatus] = React.useState({});
   const [blob, setBlob] = React.useState({});
@@ -32,7 +30,7 @@ export default function App() {
     },[]);
   
   let client = new S3Client({
-    region: "us-west-2",
+    region: REGION,
     credentials: {
       accessKeyId : ACCESS_ID,
       secretAccessKey: SECRET_KEY,
@@ -43,8 +41,7 @@ export default function App() {
   const year = new Date().getFullYear();
   const day = new Date().getDate();
   const path = year+"/"+month+"/"+day;
-  console.log("this is the path for today ",path);
-  const bucketParams = {Bucket: "front.cam.storage", Prefix: path};
+  const bucketParams = {Bucket: BUCKET, Prefix: path};
   
   const run = async() => {
     try{
@@ -53,29 +50,17 @@ export default function App() {
       console.log("Error",err);
     }
   }
-  /*
-  function getUrl(key){
-    return client.send(new GetObjectCommand({Bucket: "front.cam.storage", Key: key})).then(command => {
-      return getSignedUrl(client,command,{expiresIn:3600});
-    }).catch(console.error);
-  }
-  */
+
   const getUrl = async (key) => {
     try {
       let url = await getSignedUrl(
         client,
         new GetObjectCommand({
-          Bucket: "front.cam.storage",
+          Bucket: BUCKET,
           Key: key,
         }),
         { expiresIn: 3600 }
       );
-  
-     // const supported = await Linking.canOpenURL(url);
-     // if (supported) {
-     //   await Linking.openURL(url);
-     // }
-      
       return url;
     } catch (error) {
       return error;
