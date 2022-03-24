@@ -24,10 +24,14 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.freddyjohn.ExpoCamApp"
+      "":{
+
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"
     }
+    
   }
+  
 }
