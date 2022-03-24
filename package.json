@@ -1,11 +1,10 @@
 {
   "name": "expo-camapp",
   "version": "1.0.0",
-  "main": "node_modules/expo/AppEntry.js",
   "scripts": {
-    "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "start": "expo start --dev-client",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "web": "expo start --web",
     "eject": "expo eject"
   },
@@ -42,7 +41,8 @@
     "querystring-es3": "^0.2.1",
     "react": "17.0.1",
     "react-dom": "17.0.1",
-    "react-native": "^0.64.3",
+    "react-native": "0.64.3",
+    "react-native-calendars": "^1.1280.0",
     "react-native-crypto": "^2.2.0",
     "react-native-dotenv": "^3.3.1",
     "react-native-get-random-values": "^1.7.2",
@@ -60,7 +60,8 @@
     "timers-browserify": "^1.0.1",
     "tty-browserify": "^0.0.0",
     "util": "^0.10.4",
-    "vm-browserify": "^0.0.4"
+    "vm-browserify": "^0.0.4",
+    "expo-splash-screen": "~0.14.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
