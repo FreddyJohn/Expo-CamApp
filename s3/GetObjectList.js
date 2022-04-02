@@ -1,24 +1,42 @@
-import { S3Client, ListObjectsCommand, GetObjectCommand} from "@aws-sdk/client-s3";
+import { S3Client, ListObjectsCommand} from "@aws-sdk/client-s3";
 import {ACCESS_ID, SECRET_KEY, BUCKET, REGION} from "@env";
-import React, {useState, useEffect} from 'react';
+import {useState, useEffect} from 'react';
 
 //s3 hook
-const useDailyUploadsList = () => {
-    
-    const [list, setList] = useState([]);
-    const [amList,setAMList] = React.useState(null);
-    const [pmList,setPMList] = React.useState(null);
-    const [dateTitle,setDateTitle] = React.useState(null);
+const useDailyUploadsList = (props) => {
+  const [list,setList] = useState([]);
+  useEffect(()=>{
+    getTodaysUploads(props);
+  },[]);
+  let client = new S3Client({
+    region: REGION,
+    credentials: {
+      accessKeyId : ACCESS_ID,
+      secretAccessKey: SECRET_KEY,
+    }
+  });
+  const getTodaysUploads = async(props) => {
+    try{
+      console.log("the prefix is -> ", props);
+      const bucketParams = {Bucket: BUCKET, Prefix: props};
+      setList(await client.send(new ListObjectsCommand(bucketParams)));
+    }catch(err){
+      console.log("Error",err);
+    }
+  }
+  return list;
+}
+export default useDailyUploadsList;
 
-    function getPath(){
-        const month = new Date().getMonth() + 1; 
-        const year = new Date().getFullYear();
-        const day = new Date().getDate();
-        const title = year+"-"+month+"-"+day;
-        const path = year+"/"+month+"/"+day;
-        setDateTitle(title);
-        return path
-      }
+
+/*
+const useDailyUploadsList = (props) => {
+
+    console.log("getting uploads for selected day -> ",props);
+
+    const [list, setList] = useState([]);
+    const [amList,setAMList] = useState(null);
+    const [pmList,setPMList] = useState(null);
 
     function getFormatedData(array){
         var data = [];
@@ -32,7 +50,7 @@ const useDailyUploadsList = () => {
           data[i] = dict;
         }
         return data;
-      }
+    }
       
     function setUploadDictionaries(array){
         let amArray = array.filter(key => key.includes("am"));
@@ -41,20 +59,18 @@ const useDailyUploadsList = () => {
         const pmUploads = getFormatedData(pmArray);
         setAMList(amUploads);
         setPMList(pmUploads);
-      }
+    }
     
-
-      useEffect(()=>{
-      },[list]);
+    useEffect(()=>{
+    },[list]);
     
-      
-      useEffect(()=> {
+    useEffect(()=> {
         getTodaysUploads().then(data => {
-          let array = data.Contents.map(element => element.Key);
-          setUploadDictionaries(array);
-          setList(array);
-        });
-        },[]);
+        let array = data.Contents.map(element => element.Key);
+        setUploadDictionaries(array);
+        setList(array);
+      });
+      });
 
 
     let client = new S3Client({
@@ -65,22 +81,26 @@ const useDailyUploadsList = () => {
         }
       });
 
-      const getTodaysUploads = async() => {
-        try{
-          path = getPath();
-          const bucketParams = {Bucket: BUCKET, Prefix: path};
-          return client.send(new ListObjectsCommand(bucketParams));
-        }catch(err){
-          console.log("Error",err);
-        }
-        
+    const getTodaysUploads = async() => {
+      try{
+        console.log("the prefix is -> ", props);
+        const bucketParams = {Bucket: BUCKET, Prefix: props};
+        return client.send(new ListObjectsCommand(bucketParams));
+      }catch(err){
+        console.log("Error",err);
       }
-      var data = {};
-      data.date = dateTitle;
-      data.lists = [amList,pmList];
-      //return [amList,pmList];
-      return data;
+    }
+    var data = {};
+    data.lists = [];      
+    if (amList && amList.length!=0){
+      data.lists[data.lists.length] = amList; 
+    }
+    if(pmList && pmList.length!=0){
+      data.lists[data.lists.length] = pmList;
+    }
+    return data;
     
       
 };
 export default useDailyUploadsList;
+*/

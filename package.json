@@ -20,6 +20,7 @@
     "@aws-sdk/util-format-url": "^3.55.0",
     "@config-plugins/react-native-webrtc": "^2.0.2",
     "@react-native-community/hooks": "^2.8.1",
+    "@react-navigation/native-stack": "^6.5.2",
     "@tradle/react-native-http": "^2.0.0",
     "assert": "^1.1.1",
     "aws-sdk": "^2.1095.0",
@@ -33,6 +34,7 @@
     "expo-crypto": "~10.1.1",
     "expo-dev-client": "~0.8.4",
     "expo-secure-store": "~11.1.0",
+    "expo-splash-screen": "~0.14.1",
     "expo-status-bar": "~1.2.0",
     "https-browserify": "^0.0.1",
     "link": "^0.1.5",
@@ -60,8 +62,7 @@
     "timers-browserify": "^1.0.1",
     "tty-browserify": "^0.0.0",
     "util": "^0.10.4",
-    "vm-browserify": "^0.0.4",
-    "expo-splash-screen": "~0.14.1"
+    "vm-browserify": "^0.0.4"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",

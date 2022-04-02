@@ -1,48 +1,79 @@
-import React, {useEffect,useState} from 'react';
-import { View, Text, FlatList, TouchableHighlight, StyleSheet } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
+import { Platform } from 'react-native-web';
+import React, {useEffect} from 'react';
+import { View, Text, FlatList, TouchableHighlight, StyleSheet} from 'react-native';
 import useGetSignedUrl from '../s3/GetSignedUrl';
 import useDailyUploadsList from '../s3/GetObjectList';
+import useFormat from '../util/Format';
 import {Video} from 'expo-av';
+import { Calendar } from 'react-native-calendars';
 
+const VideoSelection = ({ title,calendar,state}) => {
+  return(
+  <View style={styles.container}>
+    {!state ? calendar : title}
+  </View>
+  )
+}
 //functional component
-export const ListVideo = () => {
+export const ListVideo = (props) => {
     const [status,setStatus] = React.useState([]);
     const [url,setUrl] = React.useState([]);
-
-    const data = useDailyUploadsList();
+    const [bool,setBool] = React.useState([false]);
+    const [data,setData] = React.useState([]);
+    const [path,setPath] = React.useState(props.path);
+    
     useEffect(()=>{
-    },[data])
-    const video = React.useRef(null);
+      useDailyUploadsList(path).then(unformattedData =>{
+        const formattedData = useFormat(unformattedData);
+        console.log(formattedData);
+        setData(formattedData);
+      });
+    },[path]);
 
+    const video = React.useRef(null);
     return (
         <View>
-              <Video
-              ref={video}
-              source={{uri : url}}
-              style={{width:"100%", height:"60%"}}
-              useNativeControls
-              resizeMode="contain"
-              isLooping
-              onPlayBackStatusUpdate={status=> setStatus(()=>status)}/>
-          <View style={styles.container}>
-                      {data.lists?.map((list)=> 
-                  <FlatList
-                      ItemSeparatorComponent={ItemDivider}
-                      ListHeaderComponent={()=><Text>{"tod"}</Text>}
-                      data={list}
-                      renderItem={({item}) => (
-                      <TouchableHighlight 
-                      onPress={() => useGetSignedUrl(item.value).then(data =>{
-                        setUrl(data);
-                        status.isPlaying ? video.current.pauseAsync() : video.current.playAsync();
-                        console.log(item,url) 
-                        })}> 
-                          <View>
-                              <Text>{item.key}</Text>
-                          </View>
-                      </TouchableHighlight>)}
-              />)}
+            <Video
+            ref={video}
+            source={{uri : url}}
+            style={{width:"100%", height:"60%"}}
+            useNativeControls
+            resizeMode="contain"
+            isLooping
+            onPlayBackStatusUpdate={status=> setStatus(()=>status)}/>
+          <View style={styles.list}>
+            <Text onPress={()=>{setBool(false); console.log(bool);}}>
+              {path.substring(0,path.lastIndexOf("/")).replaceAll("/","-")}
+            </Text>
           </View>
+          <VideoSelection title={data.lists?.map((list) => 
+            <FlatList
+                contentContainerStyle={styles.list}
+                ItemSeparatorComponent={ItemDivider}
+                ListHeaderComponent={()=><Text>{"tod"}</Text>}
+                data={list}
+                renderItem={({item}) => (
+                <TouchableHighlight
+                onPress={() => useGetSignedUrl(item.value).then(data =>{
+                  setUrl(data);
+                  status.isPlaying ? video.current.pauseAsync() : video.current.playAsync();
+                  console.log(item,url);
+                  })}> 
+                    <View>
+                        <Text>{item.key}</Text>
+                    </View>
+                </TouchableHighlight>)}
+              />)} 
+                calendar = {<Calendar
+                onDayPress={day =>{
+                  const formattedDay = day.year+"/"+day.month+"/"+day.day+"/";
+                  console.log(day);
+                  setPath(formattedDay);
+                  setBool(true);}
+                }></Calendar>}
+                state={bool}
+                />
         </View>
     );
 };
@@ -56,7 +87,8 @@ const ItemDivider = () => {
         }}
       />
     );
-  }
+}
+
 const styles = StyleSheet.create({
     container: {
       flexDirection:"row",
@@ -64,6 +96,10 @@ const styles = StyleSheet.create({
       height: "30%",
       paddingTop: Platform.OS === "android" ? StatusBar.height : 0,
       justifyContent: "space-evenly",
+    },
+    list: {
+      alignItems: "center",
+      flexGrow: 1,
     },});
 
 
@@ -76,37 +112,6 @@ const styles = StyleSheet.create({
 
 
 
-/*
-            {data.list.map(list => 
-            <FlatList
-              data={list}
-              renderItem={({data}) => (
-              <TouchableHighlight 
-                onPress={() => console.log(data.key)}> 
-                <View>
-                  <Text style={styles.textItem}>{item.key}</Text>
-                </View>
-              </TouchableHighlight>)}/>)}
-*/
-/*
-<View style={styles.timeTitle}>
-    <Text style={styles.timeofDayTitle}>{"AM"}</Text>
-    <FlatList 
-    data={AMList}
-    ItemSeparatorComponent={ItemDivider}
-    renderItem={({item}) => (
-        <TouchableHighlight 
-        onPress={() => getUrl(item.value).then(url => {
-            console.log(url);
-            setUrl(url);
-            status.isPlaying ? video.current.pauseAsync() : video.current.playAsync();
-        }).catch(getUrl(console.error))}> 
-        <View>
-            <Text style={styles.textItem}>{item.key}</Text>
-        </View>
-        </TouchableHighlight>)}/>
-</View>
-*/
 
 
 
