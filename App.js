@@ -15,8 +15,8 @@ export default function App() {
     const month = new Date().getMonth() + 1; 
     const year = new Date().getFullYear();
     const day = new Date().getDate();
-    const path = year+"/"+month+"/"+day;
-    console.log("the day today is -> ", path)
+    const path = year+"/"+month+"/"+day+"/";
+    console.log("the day today is -> ", path);
     return path;
   }
   return (
