@@ -1,11 +1,8 @@
 import { 
-  StyleSheet,
   SafeAreaView, 
 } from "react-native";
 import "react-native-get-random-values";
 import "react-native-url-polyfill/auto";
-import React, {useState} from 'react';
-
 import {ListVideo} from './components/ListVideo'
 
 

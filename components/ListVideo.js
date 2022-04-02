@@ -13,10 +13,10 @@ const VideoSelection = ({ videoList,calendar,bool,data}) => {
   if(!bool){
     content=calendar
   }
-  else if(bool && Object.keys(data)!=0){
+  else if(bool && data){
     content=videoList
   }
-  else if(Object.keys(data)==0){
+  else if(!data){
     content=<View style={{alignItems:"center"}}><Text>{"No videos for the selected date."}</Text></View>
   } 
   return(
@@ -70,6 +70,7 @@ export const ListVideo = (props) => {
             useNativeControls
             resizeMode="stretch"
             isLooping
+            positionMillis={0}
             onPlayBackStatusUpdate={status=> setStatus(()=>status)}/>
           </View>
           <DateTitle title={
@@ -83,25 +84,34 @@ export const ListVideo = (props) => {
           <VideoSelection videoList={
             <View style={styles.container}>{data?.map((list) => 
               <SectionList
+                  contentContainerStyle={styles.list}
+                  ItemSeparatorComponent={ItemDivider}
                   sections={list}
                   keyExtractor={(item, index) => item + index}
-                  renderSectionHeader={({ section: { title } }) => <Text>{title}</Text>}
                   renderItem={({item}) => 
                   <TouchableHighlight
-                  onPress={() => useGetSignedUrl(table.get(item)).then(data =>{
-                    setUrl(data);
+                  onPress={() => useGetSignedUrl(table.get(item)).then(signedUrl =>{
+                    setUrl(signedUrl);
                     status.isPlaying ? video.current.pauseAsync() : video.current.playAsync();
                     video.current.setPositionAsync(0);
-                    console.log(item,url);
+                    console.log(url);
                     })}> 
                       <View>
                           <Text style={styles.itemText}>{item}</Text>
                       </View>
                   </TouchableHighlight>}
+                  renderSectionHeader={({ section: {title}}) => <Text style= {styles.sectionText}>{title}</Text>}
                 />)}
                 </View>} 
-                calendar = {<Calendar
-                style={{backgroundColor: '#444C48',}}
+                calendar = {<Calendar 
+                theme={{
+                  calendarBackground:"#303734",
+                  monthTextColor: "black",
+                  dayTextColor: "black",
+                  arrowColor: "black",
+                  textDisabledColor: "#303734",
+                  todayTextColor: "white",
+                }}
                 onDayPress={day =>{
                   const formattedDay = day.year+"/"+day.month+"/"+day.day+"/";
                   console.log(day);
@@ -140,18 +150,25 @@ const styles = StyleSheet.create({
     justifyContent: "space-evenly",
     borderBottomWidth: 2,
     borderTopWidth : 2,
-    borderColor: "black",
+    borderColor: "#303734",
   },
   list: {
     alignItems: "center",
     flexGrow:1,
     borderLeftWidth: 1,
     borderRightWidth :1,
-    borderColor: "black",
+    borderColor: "#303734",
 
   },
   dateTitle: {
     alignItems: "center",
+    backgroundColor: '#444C48',
+  },
+  sectionText: {
+    alignItems: "center",
+    backgroundColor: '#444C48',
+    fontSize: 30,
+    width:100,
   },
   dateText: {
     fontSize: 30,
