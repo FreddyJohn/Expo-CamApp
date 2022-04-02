@@ -8,10 +8,17 @@ import useFormat from '../util/Format';
 import {Video} from 'expo-av';
 import { Calendar } from 'react-native-calendars';
 
-const VideoSelection = ({ title,calendar,state}) => {
+const VideoSelection = ({ videoList,calendar,bool}) => {
   return(
-  <View style={styles.container}>
-    {!state ? calendar : title}
+  <View>
+    {!bool ? calendar : videoList}
+  </View>
+  )
+}
+const DateTitle = ({bool,title}) => {
+  return(
+  <View  style={styles.list}>
+    {!bool ? null : title}
   </View>
   )
 }
@@ -42,29 +49,32 @@ export const ListVideo = (props) => {
             resizeMode="contain"
             isLooping
             onPlayBackStatusUpdate={status=> setStatus(()=>status)}/>
-          <View style={styles.list}>
+          <DateTitle title={
             <Text onPress={()=>{setBool(false); console.log(bool);}}>
               {path.substring(0,path.lastIndexOf("/")).replaceAll("/","-")}
-            </Text>
-          </View>
-          <VideoSelection title={data.lists?.map((list) => 
-            <FlatList
-                contentContainerStyle={styles.list}
-                ItemSeparatorComponent={ItemDivider}
-                ListHeaderComponent={()=><Text>{"tod"}</Text>}
-                data={list}
-                renderItem={({item}) => (
-                <TouchableHighlight
-                onPress={() => useGetSignedUrl(item.value).then(data =>{
-                  setUrl(data);
-                  status.isPlaying ? video.current.pauseAsync() : video.current.playAsync();
-                  console.log(item,url);
-                  })}> 
-                    <View>
-                        <Text>{item.key}</Text>
-                    </View>
-                </TouchableHighlight>)}
-              />)} 
+            </Text>}
+            bool={bool}>
+          </DateTitle>
+          <VideoSelection videoList={
+            <View style={styles.container}>{data.lists?.map((list) => 
+              <FlatList
+                  contentContainerStyle={styles.list}
+                  ItemSeparatorComponent={ItemDivider}
+                  ListHeaderComponent={()=><Text>{"tod"}</Text>}
+                  data={list}
+                  renderItem={({item}) => (
+                  <TouchableHighlight
+                  onPress={() => useGetSignedUrl(item.value).then(data =>{
+                    setUrl(data);
+                    status.isPlaying ? video.current.pauseAsync() : video.current.playAsync();
+                    console.log(item,url);
+                    })}> 
+                      <View>
+                          <Text>{item.key}</Text>
+                      </View>
+                  </TouchableHighlight>)}
+                />)}
+                </View>} 
                 calendar = {<Calendar
                 onDayPress={day =>{
                   const formattedDay = day.year+"/"+day.month+"/"+day.day+"/";
@@ -72,7 +82,7 @@ export const ListVideo = (props) => {
                   setPath(formattedDay);
                   setBool(true);}
                 }></Calendar>}
-                state={bool}
+                bool={bool}
                 />
         </View>
     );
@@ -99,7 +109,8 @@ const styles = StyleSheet.create({
     },
     list: {
       alignItems: "center",
-      flexGrow: 1,
+      flexGrow:1,
+
     },});
 
 

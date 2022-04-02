@@ -15,7 +15,7 @@ const useFormat = (data) => {
         }
         return data;
     }
-      
+    //if data is null return an empty array 
     function setUploadDictionaries(data){
         let array = data.Contents.map(element => element.Key);
         let amArray = array.filter(key => key.includes("am"));
