@@ -20,7 +20,10 @@ export default function App() {
     return path;
   }
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{    
+      backgroundColor: "#303734",
+      height:"100%",
+      width: "100%"}}>
       <ListVideo path = {getPath()}/>
     </SafeAreaView>
   );
