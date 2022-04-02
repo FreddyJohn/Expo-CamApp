@@ -8,10 +8,21 @@ import useFormat from '../util/Format';
 import {Video} from 'expo-av';
 import { Calendar } from 'react-native-calendars';
 
-const VideoSelection = ({ videoList,calendar,bool}) => {
+const VideoSelection = ({ videoList,calendar,bool,data}) => {
+  let content
+  if(!bool){
+    content=calendar
+  }
+  else if(bool && Object.keys(data)!=0){
+    content=videoList
+  }
+  else if(Object.keys(data)==0){
+    content=<Text>{"No videos for the selected date."}</Text>
+  }  
+  
   return(
   <View>
-    {!bool ? calendar : videoList}
+    {content}
   </View>
   )
 }
@@ -22,6 +33,7 @@ const DateTitle = ({bool,title}) => {
   </View>
   )
 }
+
 //functional component
 export const ListVideo = (props) => {
     const [status,setStatus] = React.useState([]);
@@ -38,17 +50,22 @@ export const ListVideo = (props) => {
       });
     },[path]);
 
+    /*
+      moveout = cv2.VideoWriter(move_file, fourcc, 10.0, (640,480),True)
+    */
     const video = React.useRef(null);
     return (
-        <View>
+        <View style={styles.main}>
+          <View>
             <Video
             ref={video}
             source={{uri : url}}
-            style={{width:"100%", height:"60%"}}
+            style={{width:"100%", height:320}}
             useNativeControls
-            resizeMode="contain"
+            resizeMode="stretch"
             isLooping
             onPlayBackStatusUpdate={status=> setStatus(()=>status)}/>
+          </View>
           <DateTitle title={
             <Text onPress={()=>{setBool(false); console.log(bool);}}>
               {path.substring(0,path.lastIndexOf("/")).replaceAll("/","-")}
@@ -76,6 +93,7 @@ export const ListVideo = (props) => {
                 />)}
                 </View>} 
                 calendar = {<Calendar
+                style={styles.calendar}
                 onDayPress={day =>{
                   const formattedDay = day.year+"/"+day.month+"/"+day.day+"/";
                   console.log(day);
@@ -83,10 +101,12 @@ export const ListVideo = (props) => {
                   setBool(true);}
                 }></Calendar>}
                 bool={bool}
+                data={data}
                 />
         </View>
     );
 };
+
 const ItemDivider = () => {
     return (
       <View
@@ -100,18 +120,26 @@ const ItemDivider = () => {
 }
 
 const styles = StyleSheet.create({
-    container: {
-      flexDirection:"row",
-      backgroundColor: '#fff',
-      height: "30%",
-      paddingTop: Platform.OS === "android" ? StatusBar.height : 0,
-      justifyContent: "space-evenly",
-    },
-    list: {
-      alignItems: "center",
-      flexGrow:1,
+  main: {
+    justifyContent: "space-evenly",
+    alignItems: "center",
+  },
+  container: {
+    flexDirection:"row",
+    backgroundColor: '#fff',
+    height: "30%",
+    paddingTop: Platform.OS === "android" ? StatusBar.height : 0,
+    justifyContent: "space-evenly",
+  },
+  list: {
+    alignItems: "center",
+    flexGrow:1,
 
-    },});
+  },
+  calendar: {
+    height:"30%"
+
+  },});
 
 
 

@@ -15,22 +15,26 @@ const useFormat = (data) => {
         }
         return data;
     }
-    //if data is null return an empty array 
+
     function setUploadDictionaries(data){
-        let array = data.Contents.map(element => element.Key);
-        let amArray = array.filter(key => key.includes("am"));
-        let pmArray = array.filter(key => key.includes("pm"));
-        const amUploads = getFormatedData(amArray);
-        const pmUploads = getFormatedData(pmArray);
-        var data = {};
-        data.lists = [];      
-        if (amUploads && amUploads.length!=0){
-          data.lists[data.lists.length] = amUploads; 
+        if(data.Contents){
+            let array = data.Contents.map(element => element.Key);
+            let amArray = array.filter(key => key.includes("am"));
+            let pmArray = array.filter(key => key.includes("pm"));
+            const amUploads = getFormatedData(amArray);
+            const pmUploads = getFormatedData(pmArray);
+            var data = {};
+            data.lists = [];      
+            if (amUploads && amUploads.length!=0){
+                data.lists[data.lists.length] = amUploads; 
+            }
+            if(pmUploads && pmUploads.length!=0){
+                data.lists[data.lists.length] = pmUploads;
+            }
+            return data;
+        }else{
+            return {};
         }
-        if(pmUploads && pmUploads.length!=0){
-          data.lists[data.lists.length] = pmUploads;
-        }
-        return data;
     }
     return setUploadDictionaries(data);
 }
