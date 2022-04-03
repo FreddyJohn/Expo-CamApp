@@ -1,12 +1,13 @@
 import { StatusBar } from 'expo-status-bar';
 import { Platform } from 'react-native-web';
 import React, {useEffect} from 'react';
-import { View, Text, SectionList, TouchableHighlight, StyleSheet} from 'react-native';
+import { View, Text, SectionList, TouchableHighlight, StyleSheet, useWindowDimensions} from 'react-native';
 import useGetSignedUrl from '../s3/GetSignedUrl';
 import useDailyUploadsList from '../s3/GetObjectList';
 import useFormat from '../util/Format';
 import {Video} from 'expo-av';
 import { Calendar } from 'react-native-calendars';
+
 
 const VideoSelection = ({ videoList,calendar,bool,data}) => {
   let content
@@ -54,11 +55,10 @@ export const ListVideo = (props) => {
 
     /*
       moveout = cv2.VideoWriter(move_file, fourcc, 10.0, (640,480),True)
-      
-      The PixelRatio API of react native might be what you are looking for.
-      It has methods like getPixelSizeForLayoutSize() and roundToNearestPixel()
-
+      640/480 = useWindowDimensions().width / x
+      x = (480/640)*useWindowDimensions().width
     */
+    console.log("width is: ",useWindowDimensions().width)
     const video = React.useRef(null);
     return (
         <View style={styles.main}>
@@ -66,7 +66,7 @@ export const ListVideo = (props) => {
             <Video
             ref={video}
             source={{uri : url}}
-            style={{width:"100%", height:320}}
+            style={{width:"100%", height:(480/640)*useWindowDimensions().width}}
             useNativeControls
             resizeMode="stretch"
             isLooping
